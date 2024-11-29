@@ -1,7 +1,8 @@
 
 package stu_mng_sys;
 import java.util.*;
-public class Scores  {
+import java.io.*;
+public class Scores implements Serializable{
     private float attendanceScore, processScore, midtermScore, finalScore;
     private Student student; // Associate with Student class
     private Subject subject;// Compostion with Subject
@@ -97,8 +98,88 @@ public class Scores  {
         System.out.println("Scores updated successfully!");
     }
     
+    // ghi thong tin vao file nhi phan 
+    public static void writeScoreToFile(String fileName, Scores score) {
+        try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(fileName, true))) {
+            os.writeObject(score);
+        } catch (IOException e) {
+            
+        }
+    }
+
+    // Doc danh sach diem tu file nhi phan
+    public static ArrayList<Scores> readScoresFromFile(String fileName) throws ClassNotFoundException {
+        ArrayList<Scores> scoresList = new ArrayList<>();
+        try (ObjectInputStream os = new ObjectInputStream(new FileInputStream(fileName))) {
+            while (true) {
+                Scores score = (Scores) os.readObject();
+                scoresList.add(score);
+            }
+        } catch (EOFException e) {
+            // Khi gap EOF, khong con gi de doc nua
+        } catch (IOException e) {
+           
+        }
+        return scoresList;
+    }
+
     public String toString(){   
         return this.attendanceScore + " " + this.processScore + " " + this.midtermScore + " " + this.finalScore + " " + " " + this.student + " " + subject.getSubjectName(); 
     }
     
 }
+// BE PHAN DUOI NAY VAO HAM MAIN NEU CAN
+/*
+        Scanner sc = new Scanner(System.in);
+        ArrayList<Subject> subjectList = new ArrayList<>();
+        String fileName = "Subjects.in";
+
+        // Kiểm tra xem file có tồn tại và có dữ liệu không
+        File file = new File(fileName);
+        if (file.exists() && file.length() > 0) {
+            try {
+                subjectList.addAll(Subject.readSubjectFromFile(fileName));
+            } catch (ClassNotFoundException e) {
+                System.out.println("Class not found exception: " + e.getMessage());
+            }
+        }
+
+        while (true) {
+            System.out.println("1. Add new subject");
+            System.out.println("2. View all subjects");
+            System.out.println("3. Exit");
+            System.out.print("Choose an option: ");
+            int choice = sc.nextInt();
+            sc.nextLine(); 
+
+            switch (choice) {
+                case 1: // them mon hoc moi
+                    System.out.print("Enter subject ID: ");
+                    String subjectID = sc.nextLine();
+                    System.out.print("Enter subject name: ");
+                    String subjectName = sc.nextLine();
+
+                    Subject newSubject = new Subject(subjectID, subjectName);
+                    subjectList.add(newSubject);
+                    Subject.writeSubjectToFile(fileName, newSubject); // Ghi môn học vào file
+                    System.out.println("Subject added successfully!");
+                    break;
+
+                case 2: // xem danh sach mon hoc
+                    System.out.println("List of Subjects:");
+                    for (Subject subject : subjectList) {
+                        System.out.println(subject);
+                    }
+                    break;
+
+                case 3: // thoat
+                    System.out.println("Exiting...");
+                    sc.close();
+                    return;
+
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+        
+*/
