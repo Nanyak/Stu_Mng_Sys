@@ -185,7 +185,7 @@ public class Student implements Serializable{
                     String studentIDToModify = sc.nextLine();
                     for(Student student:studentList){
                         if(student.getStudentID().equals(studentIDToModify)){
-                            student.viewModifyInfor(studentList);
+                            student.modifyStudentInfo();
                             break;
                         }
                     }
