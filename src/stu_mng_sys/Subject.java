@@ -82,7 +82,7 @@ public class Subject implements Serializable{
 /*
         Scanner sc = new Scanner(System.in);
         ObjectInputStream o = new ObjectInputStream(new FileInputStream("Subject.in"));
-        ArrayList<Subject> subjectList = new ArrayList<>();
+        ArrayList<Subject> subjectList = ArrayList<Subject>o.readObject(); 
         System.out.print("Enter Full Name: ");
         String fullName = sc.nextLine();
         System.out.print("Enter Date of Birth: ");
