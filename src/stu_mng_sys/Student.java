@@ -1,4 +1,4 @@
-Spackage stu_mng_sys;
+package stu_mng_sys;
 import java.util.*;
 import java.io.*;
 
@@ -115,6 +115,8 @@ public class Student implements Serializable{
         System.out.println("Student information updated successfully");
     }
     
+    // lay thong tin student tu file nhi phan dua vao lop studentList
+
     public String toString(){
         this.DoB = setDoB(DoB);
         this.studentID = getStudentID();
@@ -198,6 +200,6 @@ public class Student implements Serializable{
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
-        
+        }
         
 */
