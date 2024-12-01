@@ -1,4 +1,4 @@
-package stu_mng_sys;
+Spackage stu_mng_sys;
 import java.util.*;
 import java.io.*;
 
