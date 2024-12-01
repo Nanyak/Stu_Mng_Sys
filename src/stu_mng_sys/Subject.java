@@ -5,30 +5,35 @@ import java.io.*;
 public class Subject implements Serializable{
     private String subjectID;
     private String subjectName;
-    private ArrayList<Student> enrolledStudents; // Danh sách sinh viên đã đăng ký
-
+    private ArrayList<Student> enrolledStudents = new ArrayList<>();
     // Constructor
-    public Subject(String subjectID, String subjectName) {
+    public Subject(String subjectID, String subjectName,Student student) {
         this.subjectID = subjectID;
         this.subjectName = subjectName;
-        this.enrolledStudents = new ArrayList<>();
+        enrolledStudents.add(student); 
     }
     
     // Thêm môn học
-    public void addNewProject(String projectName) {
-        System.out.println("Project '" + projectName + "' has been added to subject " + subjectName);
+    public static Subject addNewProject(Scanner sc,Student student) {
+        System.out.print("Enter subject ID: ");
+        String subjectID = sc.nextLine();
+        System.out.print("Enter subject name: ");
+        String subjectName = sc.nextLine();
+        return new Subject(subjectID, subjectName,student);
     }
     
-    public String getSubjectName(){
-        return this.subjectName;
+    public void viewSubjectInfo(){
+        System.out.println("Subject ID:" + subjectID);
+        System.out.println("Subject Name: " + subjectName);
+        System.out.println("Enrolled Students: ");
+        for(Student student:enrolledStudents){
+            System.out.println(student.getStudentID() + ": " + student.getFullName());
+        }
+        System.out.println("");
     }
     
     // Xem và sửa thông tin môn học
-    public void viewModifySubjectInfo() {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Subject ID: " + subjectID);
-        System.out.println("Subject Name: " + subjectName);
-        
+    public void modifySubjectInfo(Scanner sc) {
         System.out.print("Do you want to modify the subject name? (y/n) ");
         String option = sc.nextLine();
         if (option.equalsIgnoreCase("y")) {
@@ -37,6 +42,12 @@ public class Subject implements Serializable{
             System.out.println("Subject name updated successfully!");
         }
     }
+
+    public String getSubjectID() { // return subjectID 
+        return this.subjectID; 
+    }
+    
+    
     
     // Đăng ký môn học cho sinh viên
     public void subjectRegistering(Student student) {
@@ -57,36 +68,12 @@ public class Subject implements Serializable{
         }
     }
     
-    // ghi thong tin mon hoc vao file nhi phan
-    public static void writeSubjectToFile(String fileName, Subject subject) {
-        try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(fileName, true))) {
-            os.writeObject(subject);
-        } catch (IOException e) {
-            
-        }
-    }
-    
-    public static ArrayList<Subject> readSubjectFromFile(String fileName) throws ClassNotFoundException{
-        ArrayList<Subject>subjects = new ArrayList<>();
-        try(ObjectInputStream os = new ObjectInputStream(new FileInputStream(fileName))){
-            while(true){
-                Subject subject = (Subject) os.readObject();
-                subjects.add(subject);
-            }
-        }catch(EOFException e){
-           // Khi gap cau nay la khong con gi de doc nua
-        }catch(IOException e){
-            
-        }
-        return subjects; 
-    }
-    
 
     @Override
     public String toString() {
         StringBuilder studentNames = new StringBuilder();
         for (Student student : enrolledStudents) {
-            studentNames.append(student.getFullName()).append(", ");
+            studentNames.append(student.getStudentID() + ": " + student.getFullName() + " ");
         }
         return "Subject ID: " + subjectID + ", Subject Name: " + subjectName + ", Enrolled Students:"  + studentNames.toString();
     }
@@ -94,52 +81,88 @@ public class Subject implements Serializable{
 // BE PHAN DUOI NAY VAO HAM MAIN NEU CAN
 /*
         Scanner sc = new Scanner(System.in);
+        ObjectInputStream o = new ObjectInputStream(new FileInputStream("Subject.in"));
         ArrayList<Subject> subjectList = new ArrayList<>();
-        String fileName = "Subject.in";
+        System.out.print("Enter Full Name: ");
+        String fullName = sc.nextLine();
+        System.out.print("Enter Date of Birth: ");
+        String dateOfBirth = sc.nextLine();
+        System.out.print("Enter Gender: ");
+        String Gender = sc.nextLine();
+        System.out.print("Enter Address: ");
+        String Address = sc.nextLine();
+        System.out.print("Enter Phone Number: ");
+        String phoneNumber = sc.nextLine();
+        System.out.print("Enter Class ID: ");
+        String classID = sc.nextLine();
+        System.out.print("Enter Major: ");
+        String Major = sc.nextLine(); 
 
-        // Kiểm tra xem file có tồn tại và có dữ liệu không
-        File file = new File(fileName);
-        if (file.exists() && file.length() > 0) {
-            try {
-                subjectList.addAll(Subject.readSubjectFromFile(fileName));
-            } catch (ClassNotFoundException e) {
-                System.out.println("Class not found exception: " + e.getMessage());
-            }
-        }
+        // Tạo đối tượng Student với thông tin nhập từ người dùng
+        Student newStudent = new Student(fullName, dateOfBirth, Gender, Address,phoneNumber, classID,Major);
 
         while (true) {
-            System.out.println("1. Add new subject");
-            System.out.println("2. View all subjects");
-            System.out.println("3. Exit");
-            System.out.print("Choose an option: ");
+            System.out.println("1.Add new subject");
+            System.out.println("2.View all subjects");
+            System.out.println("3.Modify Subject Information");
+            System.out.println("4.Register for a subject");
+            System.out.println("5.Cancel subject registration");
+            System.out.println("6.Exit");
+            System.out.print("Choose an option:");
             int choice = sc.nextInt();
             sc.nextLine(); 
 
             switch (choice) {
-                case 1: // them mon hoc moi
-                    System.out.print("Enter subject ID: ");
-                    String subjectID = sc.nextLine();
-                    System.out.print("Enter subject name: ");
-                    String subjectName = sc.nextLine();
-
-                    Subject newSubject = new Subject(subjectID, subjectName);
+                case 1: // add new Subject
+                    Subject newSubject = Subject.addNewProject(sc,newStudent);
                     subjectList.add(newSubject);
-                    Subject.writeSubjectToFile(fileName, newSubject); // Ghi môn học vào file
-                    System.out.println("Subject added successfully!");
-                    break;
+                    break; 
 
-                case 2: // xem danh sach mon hoc
+                case 2: // display the list of subject
                     System.out.println("List of Subjects:");
                     for (Subject subject : subjectList) {
                         System.out.println(subject);
                     }
                     break;
 
-                case 3: // thoat
-                    System.out.println("Exiting...");
+                case 3: // Modify the information of the subject
+                    System.out.print("Enter subject ID to modify");
+                    String modifyID = sc.nextLine();
+                    for(Subject subject:subjectList){
+                        if(subject.getSubjectID().equals(modifyID)){
+                            subject.modifySubjectInfo(sc);
+                            break; 
+                        }
+                    }
+                    break;
+                
+                case 4: // Register a subject
+                    System.out.print("Enter subject ID to register: ");
+                    String registerID = sc.nextLine();
+                    for(Subject subject:subjectList){
+                        if(subject.getSubjectID().equals(registerID)){
+                            subject.subjectRegistering(newStudent);
+                            break;
+                        }
+                    }
+                    break;
+                
+                case 5: // Cancel subject registration
+                    System.out.print("Enter subjectID to cancel registration: ");
+                    String cancelID = sc.nextLine();
+                    for(Subject subject:subjectList){
+                        if(subject.getSubjectID().equals(cancelID)){
+                            subject.subjectCanceling(newStudent);
+                            break; 
+                        }
+                    }
+                    break;
+                
+                case 6: //Quit
+                    System.out.print("Exiting...");
                     sc.close();
                     return;
-
+                    
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
