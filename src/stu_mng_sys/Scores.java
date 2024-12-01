@@ -176,6 +176,9 @@ public class Scores implements Serializable{
                         System.out.println("Error writing to file: " + e.getMessage());
                     }
                     System.out.println("Score added successfully!");
+                    ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("Scores.in"));// ghi lai thong tin vao file 
+                    oos.writeObject(classesList);
+                    oos.close(); // Đóng ObjectOutputStream sau khi ghi
                     break;
 
                 case 2: // Xem tất cả điểm
