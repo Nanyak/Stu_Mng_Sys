@@ -21,6 +21,12 @@ public class Subject implements Serializable{
         String subjectName = sc.nextLine();
         return new Subject(subjectID, subjectName,student);
     }
+
+    public String getSubjectName() {
+        return this.subjectName;
+    }
+    
+    
     
     public void viewSubjectInfo(){
         System.out.println("Subject ID:" + subjectID);
@@ -43,7 +49,7 @@ public class Subject implements Serializable{
         }
     }
 
-    public String getSubjectID() { // return subjectID 
+    public String getSubjectID() {
         return this.subjectID; 
     }
     
@@ -82,7 +88,7 @@ public class Subject implements Serializable{
 /*
         Scanner sc = new Scanner(System.in);
         ObjectInputStream o = new ObjectInputStream(new FileInputStream("Subject.in"));
-        ArrayList<Subject> subjectList = ArrayList<Subject>o.readObject(); 
+        ArrayList<Subject> subjectList = new ArrayList<>();
         System.out.print("Enter Full Name: ");
         String fullName = sc.nextLine();
         System.out.print("Enter Date of Birth: ");
@@ -116,6 +122,10 @@ public class Subject implements Serializable{
                 case 1: // add new Subject
                     Subject newSubject = Subject.addNewProject(sc,newStudent);
                     subjectList.add(newSubject);
+                    /ghi lai danh sach diem vao file
+                    ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("Subject.in"));// ghi lai thong tin vao file 
+                    oos.writeObject(classesList);
+                    oos.close(); // Đóng ObjectOutputStream sau khi ghi
                     break; 
 
                 case 2: // display the list of subject
