@@ -23,49 +23,14 @@ public class Classes implements Serializable{
             System.out.println(" - " + student);
         }
     }  
-    
-    // Ghi thong tin lop vao file nhi phan
-    public static void writeClassToFile(String fileName, Classes classObj) {
-        try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(fileName, true))) {
-            os.writeObject(classObj);
-        } catch (IOException e) {
-            
-        }
-    }
-
-    // Doc danh sach lop tu file nhi phan
-    public static ArrayList<Classes> readClassesFromFile(String fileName) throws ClassNotFoundException {
-        ArrayList<Classes> classesList = new ArrayList<>();
-        try (ObjectInputStream os = new ObjectInputStream(new FileInputStream(fileName))) {
-            while (true) {
-                Classes classObj = (Classes) os.readObject();
-                classesList.add(classObj);
-            }
-        } catch (EOFException e) {
-            // Khi gap EOF, khong con gi de doc nua. 
-        } catch (IOException e) {
-            
-        }
-        return classesList;
-    }
 }
 
 // BE PHAN DUOI NAY VAO HAM MAIN NEU CAN
 /*
         Scanner sc = new Scanner(System.in);
-        ArrayList<Classes> classesList = new ArrayList<>();
-        String fileName = "Classes.in";
-
-        // Kiểm tra xem file có tồn tại và có dữ liệu không
-        File file = new File(fileName);
-        if (file.exists() && file.length() > 0) {
-            try {
-                classesList.addAll(Classes.readClassesFromFile(fileName));
-            } catch (ClassNotFoundException e) {
-                System.out.println("Class not found exception: " + e.getMessage());
-            }
-        }
-
+        ObjectInputStream o = new ObjectInputStream(new FileInputStream("Classes.in"));
+        ArrayList<Classes> classesList = (ArrayList<Classes>) o.readObject();
+        
         while (true) {
             System.out.println("1. Add new class");
             System.out.println("2. View classes");
@@ -73,30 +38,45 @@ public class Classes implements Serializable{
             System.out.print("Choose an option: ");
             int choice = sc.nextInt();
             sc.nextLine(); 
-
             switch (choice) {
-                case 1: // them sinh vien vao lop
-                    System.out.print("Enter class ID: ");
+                case 1: // Thêm lớp mới
+                    System.out.print("Enter Full Name: ");
+                    String fullName = sc.nextLine();
+                    System.out.print("Enter Date of Birth: ");
+                    String dateOfBirth = sc.nextLine();
+                    System.out.print("Enter Gender: ");
+                    String Gender = sc.nextLine();
+                    System.out.print("Enter Address: ");
+                    String Address = sc.nextLine();
+                    System.out.print("Enter Phone Number: ");
+                    String phoneNumber = sc.nextLine();
+                    System.out.print("Enter Class ID: ");
                     String classID = sc.nextLine();
-                    System.out.print("Enter major: ");
-                    String major = sc.nextLine();
-
+                    System.out.print("Enter Major: ");
+                    String Major = sc.nextLine(); 
+                    Student newStudent = new Student(fullName, dateOfBirth, Gender, Address,phoneNumber, classID,Major);
                     ArrayList<Student> students = new ArrayList<>();
-                    Classes newClass = new Classes(classID, major, students);
+                    students.add(newStudent); 
+                    Classes newClass = new Classes(classID, Major, students);
                     classesList.add(newClass);
-                    Classes.writeClassToFile(fileName, newClass);
-                    System.out.println("Class added successfully!");
+                    
+                    //ghi lai danh sach lop vao file
+                    ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("Classes.in"));// ghi lai thong tin vao file 
+                    oos.writeObject(classesList);
+                    oos.close(); // Đóng ObjectOutputStream sau khi ghi
                     break;
-                case 2: // xem thong tin lop
+                case 2: // Xem thông tin lớp
                     System.out.println("List of Classes:");
                     for (Classes classObj : classesList) {
                         classObj.viewClassInfor();
                     }
                     break;
-                case 3: // thoat
+
+                case 3: // Thoát
                     System.out.println("Exiting...");
                     sc.close();
                     return;
+
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
