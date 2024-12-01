@@ -5,7 +5,6 @@ import java.io.*;
 public class Student implements Serializable{
     private String studentID, fullName, DoB, Gender, Address, Email, phoneNo, classID,Major;
     public int index = 0;
-    private static ArrayList<Student>studentList = new ArrayList<>();
     Student(String fullName, String DoB, String Gender, String Address,String phoneNo, String classID,String Major){
         this.fullName = fullName;
         this.DoB = DoB;
@@ -63,127 +62,59 @@ public class Student implements Serializable{
     }
 
     
-    
-    public void addNewStudent(){
+    public void modifyStudentInfo(){ // modify student Information
         Scanner sc = new Scanner(System.in);
-        System.out.print("Enter full name: ");
-        String fullName = sc.nextLine();
-        System.out.print("Enter student date of birth: ");
-        String DoB = sc.nextLine();
-        System.out.print("Enter student gender: ");
-        String gender = sc.nextLine();
-        System.out.print("Enter student address: ");
-        String address = sc.nextLine();
-        System.out.print("Enter student phone number: ");
-        String phoneNo = sc.nextLine();
-        System.out.print("Enter student class ID: ");
-        String classID = sc.nextLine();
-        System.out.print("Enter student major: ");
-        String major = sc.nextLine();
+        System.out.print("Enter new full name: ");
+        this.fullName = convertFullName(sc.nextLine()); 
 
-        // Check the information of student are exist or not.
-        Student newStudent = new Student(fullName,DoB,gender,address,phoneNo,classID,major);
-        String studentID = newStudent.getStudentID();
-        for(Student student:studentList){
-            if(student.getStudentID().equals(studentID)){
-                System.out.println("The StudentID is exists");
-                return;
-            }
-        }
-        // Add new student to the list
-        studentList.add(newStudent);
-        writeToBinaryFile("Student.in", newStudent);
+        System.out.print("Enter new date of birth (dd/MM/yyyy): ");
+        this.DoB = setDoB(sc.nextLine()); 
+
+        System.out.print("Enter new gender: ");
+        this.Gender = sc.nextLine();
+
+        System.out.print("Enter new address: ");
+        this.Address = sc.nextLine();
+
+        System.out.print("Enter new phone number: ");
+        this.phoneNo = sc.nextLine();
+
+        System.out.print("Enter new class ID: ");
+        this.classID = sc.nextLine();
+
+        System.out.print("Enter new major: ");
+        this.Major = sc.nextLine();
+
+        // Cập nhật lại thông tin Email và studentID
+        this.Email = convertEmail();
+        this.studentID = getStudentID();
     }
+    
 
-    public void viewModifyInfor(){
+    public void viewModifyInfor(ArrayList<Student>studentList){ // view the modified Student Information 
         Scanner sc = new Scanner(System.in);
-        System.out.print("Enter studentID: ");
+        System.out.print("Enter studentID to modify: ");
         String searchID = sc.nextLine();
-        //Find the information of student in the list
+        // Find the information of student in the list
         Student foundStudent = null;
         for(Student student:studentList){
             if(student.getStudentID().equals(searchID)){
                 foundStudent = student;
-                break;
+                break; 
             }
         }
         if(foundStudent == null){
             System.out.println("Student information not found");
             return;
         }
-        //Display the information of student
-        System.out.println("Student information:");
-        System.out.println(foundStudent.toString());
-
-        //Modify the information of student
-        System.out.println("Do you want to modify the student information? (y/n) ");
-        String option = sc.nextLine();
-        if(option.equalsIgnoreCase("y")){
-            System.out.print("Enter new full name: ");
-            String newFullName = sc.nextLine();
-
-            System.out.print("Enter new date of birth (dd/MM/yyyy): ");
-            String newDoB = sc.nextLine();
-
-            System.out.print("Enter new gender: ");
-            String newGender = sc.nextLine();
-
-            System.out.print("Enter new address: ");
-            String newAddress = sc.nextLine();
-
-            System.out.print("Enter new phone number: ");
-            String newPhoneNo = sc.nextLine();
-
-            System.out.print("Enter new class ID: ");
-            String newClassID = sc.nextLine();
-
-            System.out.print("Enter new major: ");
-            String newMajor = sc.nextLine();
-
-            //Update the information of student to the list;
-            for (int i = 0; i < studentList.size(); i++) {
-                Student student = studentList.get(i);
-                if (student.getStudentID().equals(foundStudent.getStudentID())) {
-                    String name = student.convertFullName(newFullName);
-                    String birth = student.setDoB(newDoB);
-                    String gender = this.Gender = newGender;
-                    this.Address = newAddress;
-                    this.phoneNo = newPhoneNo;
-                    this.classID = newClassID;
-                    this.Major = newMajor;
-                    // studentList.add(new Student(name,birth,gender,this.Address,this.phoneNo,this.classID,this.Major));
-                    studentList.set(i,student);
-                    break;
-                }
-            }
-
-            System.out.println("Student information updated successfully!");
-        }
+        // Display the information of student
+        System.out.println("Current information");
+        System.out.println(foundStudent);
+        // Call the method to modify information
+        foundStudent.modifyStudentInfo();
+        System.out.println("Student information updated successfully");
     }
     
-    // lay thong tin student tu file nhi phan dua vao lop studentList
-    public static void readFromBinaryFile(String fileName)throws ClassNotFoundException{
-        try(ObjectInputStream os = new ObjectInputStream(new FileInputStream(fileName))){
-            while(true){
-                Student student = (Student) os.readObject();
-                studentList.add(student);
-            }
-        } catch(EOFException e){
-            //Khi gap cau nay la do khong con phan tu de doc nua
-        } catch(IOException e){
-            
-        }
-    }
-    // ghi thong tin student vao file nhi phan
-    public static void writeToBinaryFile(String fileName, Student student){
-        try(ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(fileName,true))){
-            os.writeObject(student);
-        }
-        catch(IOException e){
-            
-        }
-    }
-
     public String toString(){
         this.DoB = setDoB(DoB);
         this.studentID = getStudentID();
@@ -197,23 +128,14 @@ public class Student implements Serializable{
 //BE PHAN DUOI NAY VAO HAM MAIN NEU CAN
 /*
         Scanner sc = new Scanner(System.in);
-        ArrayList<Student> studentList = new ArrayList<>();
-        String fileName = "Student.in";
-
-        // Kiểm tra xem file có tồn tại và có dữ liệu không
-        File file = new File(fileName);
-        if (file.exists() && file.length() > 0) {
-            try {
-                Student.readFromBinaryFile(fileName);
-            } catch (ClassNotFoundException e) {
-                System.out.println("Class not found exception: " + e.getMessage());
-            }
-        }
+        ObjectInputStream o = new ObjectInputStream(new FileInputStream("Student.in")); 
+        ArrayList<Student> studentList = (ArrayList<Student>)o.readObject(); 
 
         while (true) {
             System.out.println("1. Add new student");
             System.out.println("2. View all students");
-            System.out.println("3. Exit");
+            System.out.println("3. Modify information");
+            System.out.println("4.Exit ");
             System.out.print("Choose an option: ");
             int choice = sc.nextInt();
             sc.nextLine();
@@ -221,11 +143,30 @@ public class Student implements Serializable{
             switch (choice) {
                 case 1:
                     // Thêm sinh viên mới
-                    Student newStudent = new Student("", "", "", "", "", "", "");
-                    newStudent.addNewStudent();
+                    System.out.print("Enter Full Name: ");
+                    String fullName = sc.nextLine();
+                    System.out.print("Enter Date of Birth: ");
+                    String dateOfBirth = sc.nextLine();
+                    System.out.print("Enter Gender: ");
+                    String Gender = sc.nextLine();
+                    System.out.print("Enter Address: ");
+                    String Address = sc.nextLine();
+                    System.out.print("Enter Phone Number: ");
+                    String phoneNumber = sc.nextLine();
+                    System.out.print("Enter Class ID: ");
+                    String classID = sc.nextLine();
+                    System.out.print("Enter Major: ");
+                    String Major = sc.nextLine(); 
+
+                    // Tạo đối tượng Student với thông tin nhập từ người dùng
+                    Student newStudent = new Student(fullName, dateOfBirth, Gender, Address,phoneNumber, classID,Major);
                     studentList.add(newStudent);
-                    Student.writeToBinaryFile(fileName, newStudent); // Ghi sinh viên mới vào file
                     System.out.println("Student added successfully!");
+
+                    // Ghi lại danh sách sinh viên vào file
+                    ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("Student.in"));
+                    oos.writeObject(studentList);
+                    oos.close(); // Đóng ObjectOutputStream sau khi ghi
                     break;
 
                 case 2:
@@ -237,7 +178,19 @@ public class Student implements Serializable{
                     break;
 
                 case 3:
-                    //thoat
+                    //modify
+                    System.out.print("Enter studentID to Modify: ");
+                    String studentIDToModify = sc.nextLine();
+                    for(Student student:studentList){
+                        if(student.getStudentID().equals(studentIDToModify)){
+                            student.viewModifyInfor(studentList);
+                            break;
+                        }
+                    }
+                    break; 
+                
+                case 4:
+                    //quit
                     System.out.println("Exiting...");
                     sc.close();
                     return;
@@ -245,5 +198,6 @@ public class Student implements Serializable{
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
-        }
+        
+        
 */
