@@ -19,6 +19,16 @@ public class Scores implements Serializable{
         this.student = student;
         this.subject = subject;
     }
+
+    public Student getStudent() {
+        return this.student;
+    }
+
+    public Subject getSubject() {
+        return this.subject; 
+    }
+    
+    
     
     public float setAttendanceScore(float d){
         if(d >= 0 && d <= 10) {
@@ -98,30 +108,6 @@ public class Scores implements Serializable{
         System.out.println("Scores updated successfully!");
     }
     
-    // ghi thong tin vao file nhi phan 
-    public static void writeScoreToFile(String fileName, Scores score) {
-        try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(fileName, true))) {
-            os.writeObject(score);
-        } catch (IOException e) {
-            
-        }
-    }
-
-    // Doc danh sach diem tu file nhi phan
-    public static ArrayList<Scores> readScoresFromFile(String fileName) throws ClassNotFoundException {
-        ArrayList<Scores> scoresList = new ArrayList<>();
-        try (ObjectInputStream os = new ObjectInputStream(new FileInputStream(fileName))) {
-            while (true) {
-                Scores score = (Scores) os.readObject();
-                scoresList.add(score);
-            }
-        } catch (EOFException e) {
-            // Khi gap EOF, khong con gi de doc nua
-        } catch (IOException e) {
-           
-        }
-        return scoresList;
-    }
 
     public String toString(){   
         return this.attendanceScore + " " + this.processScore + " " + this.midtermScore + " " + this.finalScore + " " + " " + this.student + " " + subject.getSubjectName(); 
@@ -131,48 +117,97 @@ public class Scores implements Serializable{
 // BE PHAN DUOI NAY VAO HAM MAIN NEU CAN
 /*
         Scanner sc = new Scanner(System.in);
-        ArrayList<Subject> subjectList = new ArrayList<>();
-        String fileName = "Subjects.in";
-
-        // Kiểm tra xem file có tồn tại và có dữ liệu không
-        File file = new File(fileName);
-        if (file.exists() && file.length() > 0) {
-            try {
-                subjectList.addAll(Subject.readSubjectFromFile(fileName));
-            } catch (ClassNotFoundException e) {
-                System.out.println("Class not found exception: " + e.getMessage());
-            }
-        }
-
+        ObjectInputStream o = new ObjectInputStream(new FileInputStream("Scores.in"));
+        ArrayList<Scores> scoresList = (ArrayList<Scores>)o.readObject();
         while (true) {
-            System.out.println("1. Add new subject");
-            System.out.println("2. View all subjects");
-            System.out.println("3. Exit");
+            System.out.println("1. Add new score");
+            System.out.println("2. View all scores");
+            System.out.println("3. Modify score");
+            System.out.println("4. Exit");
             System.out.print("Choose an option: ");
             int choice = sc.nextInt();
-            sc.nextLine(); 
+            sc.nextLine();
 
             switch (choice) {
-                case 1: // them mon hoc moi
+                case 1: // Thêm điểm mới
+                    // Nhập thông tin điểm
+                    System.out.print("Enter attendance score: ");
+                    float attendanceScore = sc.nextFloat();
+                    System.out.print("Enter process score: ");
+                    float processScore = sc.nextFloat();
+                    System.out.print("Enter midterm score: ");
+                    float midtermScore = sc.nextFloat();
+                    System.out.print("Enter final score: ");
+                    float finalScore = sc.nextFloat();
+                    sc.nextLine(); // Đọc dòng mới
+
+                    // Nhập thông tin sinh viên và môn học
+                    System.out.print("Enter Full Name: ");
+                    String fullName = sc.nextLine();
+                    System.out.print("Enter Date of Birth: ");
+                    String dateOfBirth = sc.nextLine();
+                    System.out.print("Enter Gender: ");
+                    String Gender = sc.nextLine();
+                    System.out.print("Enter Address: ");
+                    String Address = sc.nextLine();
+                    System.out.print("Enter Phone Number: ");
+                    String phoneNumber = sc.nextLine();
+                    System.out.print("Enter Class ID: ");
+                    String classID = sc.nextLine();
+                    System.out.print("Enter Major: ");
+                    String Major = sc.nextLine(); 
+
+                    // Tạo đối tượng Student với thông tin nhập từ người dùng
+                    Student newStudent = new Student(fullName, dateOfBirth, Gender, Address,phoneNumber, classID,Major);
                     System.out.print("Enter subject ID: ");
                     String subjectID = sc.nextLine();
                     System.out.print("Enter subject name: ");
                     String subjectName = sc.nextLine();
+                    Subject subject = new Subject(subjectID,subjectName,newStudent); // Cung cấp các thông tin cần thiết
 
-                    Subject newSubject = new Subject(subjectID, subjectName);
-                    subjectList.add(newSubject);
-                    Subject.writeSubjectToFile(fileName, newSubject); // Ghi môn học vào file
-                    System.out.println("Subject added successfully!");
+                    // Tạo đối tượng Scores và thêm vào danh sách
+                    Scores newScore = new Scores(attendanceScore, processScore, midtermScore, finalScore, newStudent, subject);
+                    scoresList.add(newScore);
+
+                    // Ghi danh sách điểm vào file
+                    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("Scores.in"))) {
+                        oos.writeObject(scoresList);
+                    } catch (IOException e) {
+                        System.out.println("Error writing to file: " + e.getMessage());
+                    }
+                    System.out.println("Score added successfully!");
                     break;
 
-                case 2: // xem danh sach mon hoc
-                    System.out.println("List of Subjects:");
-                    for (Subject subject : subjectList) {
-                        System.out.println(subject);
+                case 2: // Xem tất cả điểm
+                    System.out.println("List of Scores:");
+                    for (Scores score : scoresList) {
+                        System.out.println(score);
                     }
                     break;
 
-                case 3: // thoat
+                case 3: // Sửa điểm
+                    // Cần thêm logic để tìm và sửa điểm
+                    System.out.print("Enter student full name to modify scores: ");
+                    String studentNameToModify = sc.nextLine();
+                    System.out.print("Enter subject name to modify scores: ");
+                    String subjectNameToModify = sc.nextLine();
+
+                    boolean found = false;
+                    for(Scores score:scoresList){
+                        if (score.getStudent().getFullName().equalsIgnoreCase(studentNameToModify) &&
+                        score.getSubject().getSubjectName().equalsIgnoreCase(subjectNameToModify)) {
+                        score.ModifyScore(); // Gọi phương thức sửa điểm
+                        found = true;
+                        break; // Kết thúc vòng lặp khi tìm thấy
+                        }       
+                    }
+
+                    if (!found) {
+                        System.out.println("No matching scores found for this student and subject.");
+                    }
+                    break;
+
+                case 4: // Thoát
                     System.out.println("Exiting...");
                     sc.close();
                     return;
